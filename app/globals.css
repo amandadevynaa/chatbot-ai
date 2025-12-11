@@ -240,6 +240,14 @@ body {
   transition: all 0.2s ease;
 }
 
+/* Hide hamburger when sidebar is open */
+.hamburger-btn.sidebar-open {
+  display: none !important;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .hamburger-btn:hover {
   background-color: #f9fafb;
   border-color: #665243;
@@ -351,8 +359,11 @@ body {
    SMALL MOBILE STYLES (max-width: 480px)
    ============================================ */
 @media (max-width: 480px) {
+
+  /* Sidebar takes max 85% width, not full screen */
   .sidebar-container {
-    width: 100%;
+    width: 85%;
+    max-width: 320px;
   }
 
   /* Welcome screen adjustments */
@@ -455,5 +466,70 @@ body {
 
   to {
     opacity: 1;
+  }
+}
+
+/* ============================================
+   MOBILE KEYBOARD HANDLING
+   ============================================ */
+/* Prevent zoom on input focus */
+@media (max-width: 768px) {
+
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Use dvh for better mobile viewport handling */
+@supports (height: 100dvh) {
+  @media (max-width: 1024px) {
+    .flex.h-screen {
+      height: 100dvh;
+    }
+
+    .sidebar-container {
+      height: 100dvh;
+    }
+  }
+}
+
+/* Main content should use flex to push input to bottom */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+/* Chat messages should take available space and scroll */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Input container stays at bottom */
+.border-t.border-gray-100.bg-white {
+  flex-shrink: 0;
+}
+
+/* Touch action to prevent unwanted zooming/panning */
+@media (max-width: 768px) {
+
+  html,
+  body {
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .flex.h-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
   }
 }

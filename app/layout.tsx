@@ -15,6 +15,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "BPN Grobogan - Virtual Assistant",
   description: "Layanan Virtual Assistant Kantor Pertanahan Kabupaten Grobogan (ATR/BPN) untuk melayani masyarakat dengan informasi pertanahan",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    interactiveWidget: 'resizes-content',
+  },
 };
 
 export default function RootLayout({

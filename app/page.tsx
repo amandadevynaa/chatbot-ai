@@ -134,7 +134,7 @@ export default function Home() {
       {/* Hamburger Menu Button - Fixed, hidden when sidebar is open */}
       <button
         onClick={toggleSidebar}
-        className={`hamburger-btn ${sidebarOpen ? 'hidden' : ''}`}
+        className={`hamburger-btn ${sidebarOpen ? 'sidebar-open' : ''}`}
         aria-label="Toggle sidebar"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
