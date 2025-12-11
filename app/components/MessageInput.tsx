@@ -27,9 +27,26 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const uploadMenuRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isSmallScreen = window.innerWidth <= 768;
+      setIsMobile(isMobileDevice || (isTouchDevice && isSmallScreen));
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -175,6 +192,42 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
 
     setShowUploadMenu(false);
     // Reset input
+    e.target.value = '';
+  };
+
+  // Handler untuk native camera capture (mobile)
+  const handleCameraCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    if (!file.type.startsWith('image/')) return;
+
+    // Limit file size to 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Ukuran file maksimal 10MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      const base64Data = result.split(',')[1];
+
+      const newFile: AttachedFile = {
+        id: `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        file,
+        preview: result,
+        type: 'image',
+        data: base64Data,
+        mimeType: file.type || 'image/jpeg'
+      };
+
+      setAttachedFiles(prev => [...prev, newFile]);
+    };
+    reader.readAsDataURL(file);
+
+    setShowUploadMenu(false);
     e.target.value = '';
   };
 
@@ -354,12 +407,12 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
                         }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
                           <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                         </div>
-                        <span>Upload Gambar</span>
+                        <span className="whitespace-nowrap">Upload Gambar</span>
                       </button>
 
                       <button
@@ -374,29 +427,35 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
                         }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
                           <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </div>
-                        <span>Upload Dokumen</span>
+                        <span className="whitespace-nowrap">Upload Dokumen</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => {
-                          setShowCamera(true);
+                          if (isMobile) {
+                            // Use native camera on mobile
+                            cameraInputRef.current?.click();
+                          } else {
+                            // Use webcam modal on desktop
+                            setShowCamera(true);
+                          }
                           setShowUploadMenu(false);
                         }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
                           <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
                         </div>
-                        <span>Ambil Foto</span>
+                        <span className="whitespace-nowrap">Ambil Foto</span>
                       </button>
                     </div>
                   )}
@@ -409,6 +468,16 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
                   accept="image/*"
                   multiple
                   onChange={handleFileSelect}
+                  className="hidden"
+                />
+
+                {/* Hidden Camera Input for Mobile Native Capture */}
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleCameraCapture}
                   className="hidden"
                 />
 
