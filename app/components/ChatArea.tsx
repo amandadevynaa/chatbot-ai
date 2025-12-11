@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -7,102 +9,175 @@ interface Message {
 
 interface ChatAreaProps {
   messages: Message[];
+  isLoading: boolean;
+  onQuickAction: (action: string) => void;
 }
 
-export default function ChatArea({ messages }: ChatAreaProps) {
+export default function ChatArea({ messages, isLoading, onQuickAction }: ChatAreaProps) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Quick action suggestions
+  const quickActions = [
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      title: 'Informasi Layanan',
+      description: 'Layanan yang tersedia',
+      action: 'Apa saja layanan yang tersedia di Polsek Rembang?'
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+      title: 'Cara Melapor',
+      description: 'Prosedur pelaporan',
+      action: 'Bagaimana cara membuat laporan polisi?'
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+        </svg>
+      ),
+      title: 'Kontak Darurat',
+      description: 'Nomor penting',
+      action: 'Berapa nomor kontak darurat Polsek Rembang?'
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      title: 'Jam Operasional',
+      description: 'Waktu pelayanan',
+      action: 'Berapa jam operasional Polsek Rembang?'
+    }
+  ];
+
   // Show welcome screen when no messages
   if (messages.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-950">
-      <div className="max-w-2xl text-center">
-        {/* Logo */}
-        <div className="mb-8 flex justify-center">
-          <div className="w-20 h-20 bg-blue-900 rounded-full flex items-center justify-center shadow-lg">
-            <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center">
-              <span className="text-blue-900 font-bold text-lg">P</span>
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white overflow-y-auto">
+        <div className="max-w-2xl w-full text-center">
+          {/* Logo */}
+          <div className="mb-6 flex justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
             </div>
           </div>
-        </div>
 
-        {/* Welcome Message */}
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-          Selamat Datang
-        </h1>
-        
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-          Saya adalah Layanan Informasi Polsek Rembang. Silakan sampaikan pertanyaan Anda terkait layanan kepolisian.
-        </p>
+          {/* Welcome Text */}
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            Selamat Datang
+          </h1>
+          <p className="text-gray-500 mb-8 max-w-md mx-auto">
+            Saya asisten virtual Polsek Rembang. Ada yang bisa saya bantu hari ini?
+          </p>
 
-        {/* Suggested Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-          <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors cursor-pointer">
-            <div className="text-blue-600 mb-2">
-              <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Informasi Layanan</h3>
+          {/* Quick Actions Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+            {quickActions.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => onQuickAction(item.action)}
+                className="flex items-start gap-3 p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50/50 transition-all text-left group hover-lift"
+              >
+                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                  {item.icon}
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 text-sm">{item.title}</h3>
+                  <p className="text-xs text-gray-500">{item.description}</p>
+                </div>
+              </button>
+            ))}
           </div>
-          
-          <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors cursor-pointer">
-            <div className="text-blue-600 mb-2">
-              <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Laporan Online</h3>
-          </div>
-          
-          <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors cursor-pointer">
-            <div className="text-blue-600 mb-2">
-              <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-            </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Kontak Darurat</h3>
-          </div>
+
+          {/* Hint Text */}
+          <p className="mt-8 text-xs text-gray-400">
+            Ketik pertanyaan atau pilih topik di atas untuk memulai
+          </p>
         </div>
-      </div>
       </div>
     );
   }
 
   // Show messages when chat started
   return (
-    <div className="flex-1 overflow-y-auto p-8 bg-white dark:bg-gray-950 chat-messages">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="flex-1 overflow-y-auto bg-white chat-messages">
+      <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`flex gap-4 ${
-              message.role === 'user' ? 'justify-end' : 'justify-start'
-            }`}
+            className={`flex gap-3 message-animate ${message.role === 'user' ? 'justify-end' : 'justify-start'
+              }`}
+            style={{ animationDelay: `${index * 0.1}s` }}
           >
+            {/* Assistant Avatar */}
             {message.role === 'assistant' && (
-              <div className="w-8 h-8 bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
-                <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                  <span className="text-blue-900 font-bold text-xs">P</span>
-                </div>
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
               </div>
             )}
+
+            {/* Message Bubble */}
             <div
-              className={`max-w-[70%] rounded-lg p-4 ${
-                message.role === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
-              }`}
+              className={`max-w-[75%] rounded-2xl px-4 py-3 ${message.role === 'user'
+                  ? 'bg-blue-500 text-white rounded-br-md'
+                  : 'bg-gray-100 text-gray-800 rounded-bl-md'
+                }`}
             >
-              <p className="whitespace-pre-wrap">{message.content}</p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
             </div>
+
+            {/* User Avatar */}
             {message.role === 'user' && (
-              <div className="w-8 h-8 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
             )}
           </div>
         ))}
+
+        {/* Typing Indicator */}
+        {isLoading && (
+          <div className="flex gap-3 justify-start message-animate">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div className="bg-gray-100 rounded-2xl rounded-bl-md px-4 py-3">
+              <div className="flex gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-gray-400 typing-dot"></span>
+                <span className="w-2 h-2 rounded-full bg-gray-400 typing-dot"></span>
+                <span className="w-2 h-2 rounded-full bg-gray-400 typing-dot"></span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
       </div>
     </div>
   );
