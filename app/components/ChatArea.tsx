@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 interface Message {
   id: string;
@@ -35,8 +36,8 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
         </svg>
       ),
       title: 'Informasi Layanan',
-      description: 'Layanan yang tersedia',
-      action: 'Apa saja layanan yang tersedia di Polsek Rembang?'
+      description: 'Layanan pertanahan',
+      action: 'Apa saja layanan yang tersedia di Kantor Pertanahan Kabupaten Grobogan?'
     },
     {
       icon: (
@@ -44,9 +45,9 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      title: 'Cara Melapor',
-      description: 'Prosedur pelaporan',
-      action: 'Bagaimana cara membuat laporan polisi?'
+      title: 'Balik Nama/Waris',
+      description: 'Prosedur & persyaratan',
+      action: 'Bagaimana syarat balik nama sertifikat tanah?'
     },
     {
       icon: (
@@ -54,9 +55,9 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
         </svg>
       ),
-      title: 'Kontak Darurat',
-      description: 'Nomor penting',
-      action: 'Berapa nomor kontak darurat Polsek Rembang?'
+      title: 'Kontak & Alamat',
+      description: 'Hubungi kami',
+      action: 'Berapa nomor kontak dan alamat BPN Grobogan?'
     },
     {
       icon: (
@@ -66,7 +67,7 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
       ),
       title: 'Jam Operasional',
       description: 'Waktu pelayanan',
-      action: 'Berapa jam operasional Polsek Rembang?'
+      action: 'Berapa jam operasional Kantor Pertanahan Kabupaten Grobogan?'
     }
   ];
 
@@ -77,10 +78,14 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
         <div className="max-w-2xl w-full text-center">
           {/* Logo */}
           <div className="mb-6 flex justify-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
+            <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg">
+              <Image
+                src="/gribo.png"
+                alt="BPN Grobogan Logo"
+                width={64}
+                height={64}
+                className="object-cover w-full h-full"
+              />
             </div>
           </div>
 
@@ -89,7 +94,7 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
             Selamat Datang
           </h1>
           <p className="text-gray-500 mb-8 max-w-md mx-auto">
-            Saya asisten virtual Polsek Rembang. Ada yang bisa saya bantu hari ini?
+            Saya asisten virtual Kantor Pertanahan Kabupaten Grobogan. Ada yang bisa saya bantu hari ini?
           </p>
 
           {/* Quick Actions Grid */}
@@ -138,10 +143,14 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
           >
             {/* Assistant Avatar */}
             {message.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
+              <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
+                <Image
+                  src="/gribo.png"
+                  alt="Bot Avatar"
+                  width={32}
+                  height={32}
+                  className="object-cover w-full h-full"
+                />
               </div>
             )}
 
@@ -169,10 +178,14 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
         {/* Typing Indicator */}
         {isLoading && (
           <div className="flex gap-3 justify-start message-animate">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
+            <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
+              <Image
+                src="/gribo.png"
+                alt="Bot Avatar"
+                width={32}
+                height={32}
+                className="object-cover w-full h-full"
+              />
             </div>
             <div className="bg-gray-100 rounded-2xl rounded-bl-md px-4 py-3">
               <div className="flex gap-1.5">

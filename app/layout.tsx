@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Polsek Rembang - Virtual Assistant",
-  description: "Layanan Virtual Assistant Polsek Rembang untuk melayani masyarakat dengan informasi kepolisian",
+  title: "BPN Grobogan - Virtual Assistant",
+  description: "Layanan Virtual Assistant Kantor Pertanahan Kabupaten Grobogan (ATR/BPN) untuk melayani masyarakat dengan informasi pertanahan",
 };
 
 export default function RootLayout({
