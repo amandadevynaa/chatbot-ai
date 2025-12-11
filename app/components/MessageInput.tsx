@@ -35,7 +35,7 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
     <div className="border-t border-gray-100 bg-white px-4 py-4">
       <div className="max-w-3xl mx-auto">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="flex items-end gap-3 bg-gray-50 rounded-2xl border border-gray-200 p-2 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+          <div className="flex items-end gap-3 bg-gray-50 rounded-2xl border border-gray-200 p-2 transition-all" style={{ '--focus-color': '#665243' } as React.CSSProperties}>
             {/* Text Input */}
             <textarea
               ref={textareaRef}
@@ -57,7 +57,8 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
             <button
               type="submit"
               disabled={!message.trim() || isLoading}
-              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-blue-500 text-white disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-600 active:scale-95 transition-all"
+              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl text-white disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed active:scale-95 transition-all"
+              style={{ backgroundColor: !message.trim() || isLoading ? undefined : '#665243' }}
             >
               {isLoading ? (
                 <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">

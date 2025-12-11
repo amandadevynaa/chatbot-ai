@@ -16,11 +16,11 @@
   --text-tertiary: #9ca3af;
   --text-inverse: #ffffff;
 
-  /* Accent Colors - Soft Blue */
-  --accent-primary: #3b82f6;
-  --accent-primary-hover: #2563eb;
-  --accent-light: #eff6ff;
-  --accent-soft: #dbeafe;
+  /* Accent Colors - BPN Brown */
+  --accent-primary: #665243;
+  --accent-primary-hover: #4d3d32;
+  --accent-light: #f5f0ed;
+  --accent-soft: #e8ddd6;
 
   /* Border Colors */
   --border-light: #e5e7eb;
@@ -31,9 +31,9 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
-  /* Police Branding - Subtle */
-  --police-blue: #1e40af;
-  --police-gold: #f59e0b;
+  /* BPN Branding */
+  --bpn-brown: #665243;
+  --bpn-gold: #c9a86c;
 }
 
 @theme inline {
@@ -143,12 +143,12 @@ body {
 /* Focus Ring */
 .focus-ring:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 3px rgba(102, 82, 67, 0.3);
 }
 
 /* Gradient Text */
 .gradient-text {
-  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  background: linear-gradient(135deg, #665243 0%, #4d3d32 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -181,13 +181,13 @@ body {
 /* Highlight Message Animation - when clicking from history */
 @keyframes highlightPulse {
   0% {
-    background-color: rgba(59, 130, 246, 0.2);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    background-color: rgba(102, 82, 67, 0.2);
+    box-shadow: 0 0 0 4px rgba(102, 82, 67, 0.3);
   }
 
   50% {
-    background-color: rgba(59, 130, 246, 0.1);
-    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.1);
+    background-color: rgba(102, 82, 67, 0.1);
+    box-shadow: 0 0 0 8px rgba(102, 82, 67, 0.1);
   }
 
   100% {

@@ -103,9 +103,31 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
               <button
                 key={index}
                 onClick={() => onQuickAction(item.action)}
-                className="flex items-start gap-3 p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50/50 transition-all text-left group hover-lift"
+                className="flex items-start gap-3 p-4 bg-white border border-gray-200 rounded-xl transition-all text-left group hover-lift"
+                style={{ '--hover-border': '#665243' } as React.CSSProperties}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(102, 82, 67, 0.4)';
+                  e.currentTarget.style.backgroundColor = 'rgba(102, 82, 67, 0.05)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#e5e7eb';
+                  e.currentTarget.style.backgroundColor = 'white';
+                }}
               >
-                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 transition-colors group-hover:text-white" style={{ '--bg-hover': '#665243' } as React.CSSProperties}
+                  ref={(el) => {
+                    if (el) {
+                      el.parentElement?.addEventListener('mouseenter', () => {
+                        el.style.backgroundColor = '#665243';
+                        el.style.color = 'white';
+                      });
+                      el.parentElement?.addEventListener('mouseleave', () => {
+                        el.style.backgroundColor = '#f3f4f6';
+                        el.style.color = '#4b5563';
+                      });
+                    }
+                  }}
+                >
                   {item.icon}
                 </div>
                 <div>
@@ -157,9 +179,10 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
             {/* Message Bubble */}
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                ? 'bg-blue-500 text-white rounded-br-md'
+                ? 'text-white rounded-br-md'
                 : 'bg-gray-100 text-gray-800 rounded-bl-md'
                 }`}
+              style={message.role === 'user' ? { backgroundColor: '#665243' } : undefined}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
             </div>

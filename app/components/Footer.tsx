@@ -10,7 +10,10 @@ export default function Footer() {
 
           {/* Service Links */}
           <div className="flex flex-wrap gap-6 justify-center md:justify-end">
-            <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+            <button className="flex items-center gap-2 text-sm transition-colors" style={{ color: '#665243' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#4d3d32'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#665243'}
+            >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
