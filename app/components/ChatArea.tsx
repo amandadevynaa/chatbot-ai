@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 
 interface Message {
+  id: string;
   role: 'user' | 'assistant';
   content: string;
 }
@@ -11,9 +12,10 @@ interface ChatAreaProps {
   messages: Message[];
   isLoading: boolean;
   onQuickAction: (action: string) => void;
+  registerMessageRef: (id: string, element: HTMLDivElement | null) => void;
 }
 
-export default function ChatArea({ messages, isLoading, onQuickAction }: ChatAreaProps) {
+export default function ChatArea({ messages, isLoading, onQuickAction, registerMessageRef }: ChatAreaProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -124,7 +126,12 @@ export default function ChatArea({ messages, isLoading, onQuickAction }: ChatAre
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
         {messages.map((message, index) => (
           <div
-            key={index}
+            key={message.id}
+            ref={(el) => {
+              if (message.role === 'user') {
+                registerMessageRef(message.id, el);
+              }
+            }}
             className={`flex gap-3 message-animate ${message.role === 'user' ? 'justify-end' : 'justify-start'
               }`}
             style={{ animationDelay: `${index * 0.1}s` }}
@@ -141,8 +148,8 @@ export default function ChatArea({ messages, isLoading, onQuickAction }: ChatAre
             {/* Message Bubble */}
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                  ? 'bg-blue-500 text-white rounded-br-md'
-                  : 'bg-gray-100 text-gray-800 rounded-bl-md'
+                ? 'bg-blue-500 text-white rounded-br-md'
+                : 'bg-gray-100 text-gray-800 rounded-bl-md'
                 }`}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>

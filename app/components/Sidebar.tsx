@@ -1,10 +1,37 @@
 'use client';
 
-interface SidebarProps {
-  onNewChat: () => void;
+interface HistoryItem {
+  id: string;
+  question: string;
+  timestamp: Date;
 }
 
-export default function Sidebar({ onNewChat }: SidebarProps) {
+interface SidebarProps {
+  onNewChat: () => void;
+  history: HistoryItem[];
+  onHistoryClick: (messageId: string) => void;
+}
+
+export default function Sidebar({ onNewChat, history, onHistoryClick }: SidebarProps) {
+  // Format time for display
+  const formatTime = (date: Date) => {
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+
+    if (minutes < 1) return 'Baru saja';
+    if (minutes < 60) return `${minutes} menit lalu`;
+    if (hours < 24) return `${hours} jam lalu`;
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+  };
+
+  // Truncate long questions
+  const truncateText = (text: string, maxLength: number = 40) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
   return (
     <div className="w-72 h-full flex flex-col bg-[#fafafa] border-r border-gray-100">
       {/* Header with Logo */}
@@ -41,19 +68,55 @@ export default function Sidebar({ onNewChat }: SidebarProps) {
 
       {/* Chat History Section */}
       <div className="flex-1 px-4 overflow-y-auto">
-        <div className="mb-3">
+        <div className="mb-3 flex items-center justify-between">
           <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">Riwayat</span>
+          {history.length > 0 && (
+            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+              {history.length}
+            </span>
+          )}
         </div>
 
-        {/* Empty State */}
-        <div className="py-8 text-center">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
-            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+        {/* History List */}
+        {history.length > 0 ? (
+          <div className="space-y-1">
+            {[...history].reverse().map((item, index) => (
+              <button
+                key={item.id}
+                onClick={() => onHistoryClick(item.id)}
+                className="w-full text-left p-3 rounded-lg hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all group"
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
+                <div className="flex items-start gap-2.5">
+                  <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-blue-500 transition-colors">
+                    <svg className="w-3 h-3 text-blue-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-700 font-medium truncate group-hover:text-blue-600 transition-colors">
+                      {truncateText(item.question)}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {formatTime(item.timestamp)}
+                    </p>
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
-          <p className="text-sm text-gray-400">Belum ada riwayat</p>
-        </div>
+        ) : (
+          /* Empty State */
+          <div className="py-8 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
+              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <p className="text-sm text-gray-400">Belum ada riwayat</p>
+            <p className="text-xs text-gray-300 mt-1">Mulai percakapan untuk melihat riwayat</p>
+          </div>
+        )}
       </div>
 
       {/* Footer */}

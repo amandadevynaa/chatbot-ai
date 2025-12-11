@@ -1,23 +1,65 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Sidebar from "./components/Sidebar";
 import ChatArea from "./components/ChatArea";
 import MessageInput from "./components/MessageInput";
 
 interface Message {
+  id: string;
   role: 'user' | 'assistant';
   content: string;
 }
 
+interface HistoryItem {
+  id: string;
+  question: string;
+  timestamp: Date;
+}
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  const generateId = () => `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  const registerMessageRef = useCallback((id: string, element: HTMLDivElement | null) => {
+    if (element) {
+      messageRefs.current.set(id, element);
+    } else {
+      messageRefs.current.delete(id);
+    }
+  }, []);
+
+  const scrollToMessage = useCallback((messageId: string) => {
+    const element = messageRefs.current.get(messageId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Add highlight effect
+      element.classList.add('highlight-message');
+      setTimeout(() => {
+        element.classList.remove('highlight-message');
+      }, 2000);
+    }
+  }, []);
 
   const handleSendMessage = async (content: string) => {
+    const messageId = generateId();
+
     // Add user message
-    const userMessage: Message = { role: 'user', content };
+    const userMessage: Message = { id: messageId, role: 'user', content };
     setMessages(prev => [...prev, userMessage]);
+
+    // Add to history
+    const historyItem: HistoryItem = {
+      id: messageId,
+      question: content,
+      timestamp: new Date()
+    };
+    setHistory(prev => [...prev, historyItem]);
+
     setIsLoading(true);
 
     try {
@@ -35,6 +77,7 @@ export default function Home() {
       if (data.success) {
         // Add assistant message
         const assistantMessage: Message = {
+          id: generateId(),
           role: 'assistant',
           content: data.message
         };
@@ -42,6 +85,7 @@ export default function Home() {
       } else {
         // Add error message
         const errorMessage: Message = {
+          id: generateId(),
           role: 'assistant',
           content: 'Maaf, terjadi kesalahan. Silakan coba lagi.'
         };
@@ -50,6 +94,7 @@ export default function Home() {
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
+        id: generateId(),
         role: 'assistant',
         content: 'Maaf, terjadi kesalahan koneksi. Silakan coba lagi.'
       };
@@ -61,16 +106,26 @@ export default function Home() {
 
   const handleNewChat = () => {
     setMessages([]);
+    setHistory([]);
+    messageRefs.current.clear();
   };
 
   const handleQuickAction = (action: string) => {
     handleSendMessage(action);
   };
 
+  const handleHistoryClick = (messageId: string) => {
+    scrollToMessage(messageId);
+  };
+
   return (
     <div className="flex h-screen bg-white">
       {/* Sidebar */}
-      <Sidebar onNewChat={handleNewChat} />
+      <Sidebar
+        onNewChat={handleNewChat}
+        history={history}
+        onHistoryClick={handleHistoryClick}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -79,6 +134,7 @@ export default function Home() {
           messages={messages}
           isLoading={isLoading}
           onQuickAction={handleQuickAction}
+          registerMessageRef={registerMessageRef}
         />
 
         {/* Message Input */}
