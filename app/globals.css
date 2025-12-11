@@ -533,3 +533,111 @@ body {
     overflow: hidden;
   }
 }
+
+/* ============================================
+   UPLOAD MENU STYLES
+   ============================================ */
+@keyframes uploadMenuSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.upload-menu-animate {
+  animation: uploadMenuSlideUp 0.2s ease-out forwards;
+}
+
+/* Image preview container styles */
+.image-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 8px;
+}
+
+/* Image preview item */
+.image-preview-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.image-preview-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Remove button on image preview */
+.image-preview-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 24px;
+  height: 24px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+}
+
+.image-preview-item:hover .image-preview-remove {
+  opacity: 1;
+}
+
+.image-preview-remove:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+/* Upload button hover effect */
+.upload-btn:hover {
+  background-color: rgba(102, 82, 67, 0.1);
+  color: #665243;
+}
+
+/* Chat image display */
+.chat-image {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  transition: transform 0.2s ease;
+}
+
+.chat-image:hover {
+  transform: scale(1.02);
+}
+
+/* Mobile adjustments for upload features */
+@media (max-width: 768px) {
+  .upload-menu-animate {
+    min-width: 160px;
+  }
+
+  .image-preview-item {
+    width: 64px;
+    height: 64px;
+  }
+
+  .image-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

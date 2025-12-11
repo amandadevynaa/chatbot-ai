@@ -3,10 +3,16 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 
+interface ImageData {
+  data: string;
+  mimeType: string;
+}
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  images?: ImageData[];
 }
 
 interface ChatAreaProps {
@@ -140,7 +146,7 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
 
           {/* Hint Text */}
           <p className="mt-8 text-xs text-gray-400">
-            Ketik pertanyaan atau pilih topik di atas untuk memulai
+            Ketik pertanyaan atau pilih topik di atas untuk memulai · 📷 Upload gambar untuk analisis
           </p>
         </div>
       </div>
@@ -177,14 +183,40 @@ export default function ChatArea({ messages, isLoading, onQuickAction, registerM
             )}
 
             {/* Message Bubble */}
-            <div
-              className={`max-w-[75%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                ? 'text-white rounded-br-md'
-                : 'bg-gray-100 text-gray-800 rounded-bl-md'
-                }`}
-              style={message.role === 'user' ? { backgroundColor: '#665243' } : undefined}
-            >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+            <div className="max-w-[75%]">
+              {/* Images Preview (if any) */}
+              {message.images && message.images.length > 0 && (
+                <div className={`flex flex-wrap gap-2 mb-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  {message.images.map((img, imgIndex) => (
+                    <div
+                      key={imgIndex}
+                      className="relative rounded-xl overflow-hidden shadow-md border border-gray-200"
+                    >
+                      <Image
+                        src={`data:${img.mimeType};base64,${img.data}`}
+                        alt={`Uploaded image ${imgIndex + 1}`}
+                        width={200}
+                        height={200}
+                        className="max-w-[200px] max-h-[200px] object-cover"
+                        unoptimized
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Text Content */}
+              {message.content && (
+                <div
+                  className={`rounded-2xl px-4 py-3 ${message.role === 'user'
+                    ? 'text-white rounded-br-md'
+                    : 'bg-gray-100 text-gray-800 rounded-bl-md'
+                    }`}
+                  style={message.role === 'user' ? { backgroundColor: '#665243' } : undefined}
+                >
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                </div>
+              )}
             </div>
 
             {/* User Avatar */}

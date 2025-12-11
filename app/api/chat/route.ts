@@ -96,13 +96,21 @@ Q: Apa itu ZNT?
 A: Zona Nilai Tanah. Peta harga tanah wajar yang dibuat BPN sebagai dasar penarikan PNBP.
 `;
 
+interface ImageData {
+  data: string;
+  mimeType: string;
+}
+
 export async function POST(request: Request) {
   try {
-    const { message } = await request.json();
+    const { message, images } = await request.json() as {
+      message: string;
+      images?: ImageData[]
+    };
 
-    if (!message) {
+    if (!message && (!images || images.length === 0)) {
       return NextResponse.json(
-        { error: 'Message is required' },
+        { error: 'Message or images are required' },
         { status: 400 }
       );
     }
@@ -111,25 +119,65 @@ export async function POST(request: Request) {
     const systemPrompt = `Kamu adalah asisten virtual resmi Kantor Pertanahan Kabupaten Grobogan (BPN Grobogan), Kementerian ATR/BPN.
 
 ATURAN PENTING YANG WAJIB DIPATUHI:
-1. HANYA jawab pertanyaan berdasarkan data berikut ini. JANGAN menjawab di luar konteks data yang diberikan.
-2. Jika pertanyaan tidak ada dalam data, jawab dengan sopan: "Mohon maaf, saya tidak memiliki informasi tentang hal tersebut. Silakan hubungi langsung Kantor Pertanahan Kabupaten Grobogan di nomor (0292) 421376 atau WhatsApp 0823-2088-8815 untuk informasi lebih lanjut."
+1. HANYA jawab pertanyaan berdasarkan data berikut ini untuk pertanyaan tentang BPN. JANGAN menjawab di luar konteks data yang diberikan untuk topik BPN.
+2. Jika pertanyaan tentang BPN tidak ada dalam data, jawab dengan sopan: "Mohon maaf, saya tidak memiliki informasi tentang hal tersebut. Silakan hubungi langsung Kantor Pertanahan Kabupaten Grobogan di nomor (0292) 421376 atau WhatsApp 0823-2088-8815 untuk informasi lebih lanjut."
 3. Jawab dengan bahasa yang natural, ramah, dan mudah dipahami seperti berbicara dengan manusia.
 4. JANGAN PERNAH menggunakan tanda bintang ganda (**) atau formatting markdown dalam jawaban. Gunakan teks biasa saja.
 5. Jangan gunakan bullet points dengan tanda *, gunakan tanda - atau nomor saja.
 6. Jawab dengan singkat, padat, dan informatif.
 7. Selalu tampilkan diri sebagai representasi profesional dari Kantor Pertanahan Kabupaten Grobogan.
 
+KEMAMPUAN ANALISIS GAMBAR/DOKUMEN:
+8. Jika pengguna mengirim gambar atau dokumen, WAJIB analisis dengan teliti dan deskriptif.
+9. Untuk gambar sertifikat tanah, identifikasi: nomor sertifikat, nama pemegang hak, lokasi tanah, luas tanah, jenis hak (HM/HGB/HP dll), dan informasi penting lainnya yang tertera.
+10. Untuk dokumen lainnya, baca dan jelaskan isi dokumen tersebut dengan lengkap.
+11. Jika gambar tidak jelas atau tidak dapat dibaca, sampaikan dengan sopan dan minta gambar yang lebih jelas.
+12. PENTING: Deskripsikan ISI dari gambar/dokumen, BUKAN nama file-nya.
+
 DATA REFERENSI:
 ${BPN_GROBOGAN_RAG}
 
 Berdasarkan data di atas, jawab pertanyaan berikut dengan natural dan ramah:`;
 
-    const prompt = `${systemPrompt}\n\nPertanyaan dari masyarakat: ${message}\n\nJawaban (dalam bahasa Indonesia, natural, tanpa formatting markdown):`;
+    // Build content parts for multimodal request
+    const contentParts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [];
 
-    // Generate response using Gemini 2.5 Flash
+    // Add images first if present
+    if (images && images.length > 0) {
+      for (const image of images) {
+        contentParts.push({
+          inlineData: {
+            mimeType: image.mimeType,
+            data: image.data
+          }
+        });
+      }
+    }
+
+    // Build the text prompt
+    let textPrompt = systemPrompt + '\n\n';
+
+    if (images && images.length > 0) {
+      textPrompt += `[Pengguna mengirim ${images.length} gambar/dokumen untuk dianalisis]\n\n`;
+    }
+
+    if (message) {
+      textPrompt += `Pertanyaan dari masyarakat: ${message}\n\n`;
+    } else if (images && images.length > 0) {
+      textPrompt += `Pertanyaan dari masyarakat: Tolong analisis dan jelaskan isi dari gambar/dokumen yang saya kirim ini.\n\n`;
+    }
+
+    textPrompt += 'Jawaban (dalam bahasa Indonesia, natural, tanpa formatting markdown):';
+
+    contentParts.push({ text: textPrompt });
+
+    // Generate response using Gemini 2.5 Flash with vision capability
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: prompt,
+      contents: [{
+        role: 'user',
+        parts: contentParts
+      }],
     });
 
     // Clean response dari karakter ** jika masih ada
