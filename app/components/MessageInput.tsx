@@ -278,7 +278,7 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
         </div>
       )}
 
-      <div className="border-t border-gray-100 bg-white px-4 py-4">
+      <div className="border-t border-gray-100 bg-white px-4 py-4 mobile-safe-input-container">
         <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="relative">
             <div
