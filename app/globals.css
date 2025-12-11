@@ -200,3 +200,260 @@ body {
   animation: highlightPulse 2s ease-out forwards;
   border-radius: 1rem;
 }
+
+/* ============================================
+   RESPONSIVE SIDEBAR STYLES
+   ============================================ */
+
+/* Sidebar Container - Base Styles */
+.sidebar-container {
+  width: 288px;
+  /* w-72 */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fafafa;
+  border-right: 1px solid #f3f4f6;
+  transition: transform 0.3s ease-in-out;
+  flex-shrink: 0;
+}
+
+/* Sidebar Close Button - Hidden on Desktop */
+.sidebar-close-btn {
+  display: none;
+}
+
+/* Hamburger Button - Hidden on Desktop */
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 60;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.hamburger-btn:hover {
+  background-color: #f9fafb;
+  border-color: #665243;
+  color: #665243;
+}
+
+.hamburger-btn:active {
+  transform: scale(0.95);
+}
+
+/* Sidebar Overlay - Hidden by Default */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================
+   TABLET STYLES (max-width: 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+  .hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+  }
+
+  .sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 50;
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+
+  .sidebar-container.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .main-content {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   MOBILE STYLES (max-width: 768px)
+   ============================================ */
+@media (max-width: 768px) {
+  .sidebar-container {
+    width: 280px;
+  }
+
+  /* Adjust hamburger button position */
+  .hamburger-btn {
+    top: 12px;
+    left: 12px;
+    padding: 8px;
+  }
+
+  .hamburger-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Make chat area have padding for hamburger */
+  .main-content {
+    padding-top: 0;
+  }
+
+  /* Quick Actions Grid - Stack on Mobile */
+  .grid-cols-1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Message bubbles - Full width on mobile */
+  .max-w-\[75\%\] {
+    max-width: 85%;
+  }
+
+  /* Adjust message input padding */
+  .message-input-container {
+    padding: 12px;
+  }
+}
+
+/* ============================================
+   SMALL MOBILE STYLES (max-width: 480px)
+   ============================================ */
+@media (max-width: 480px) {
+  .sidebar-container {
+    width: 100%;
+  }
+
+  /* Welcome screen adjustments */
+  .welcome-container {
+    padding: 16px;
+  }
+
+  /* Logo size adjustments */
+  .logo-container {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Typography adjustments */
+  h1 {
+    font-size: 1.25rem;
+  }
+
+  /* Message bubbles */
+  .max-w-\[75\%\] {
+    max-width: 90%;
+  }
+}
+
+/* ============================================
+   CHAT AREA RESPONSIVE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 1024px) {
+
+  /* Add top padding for hamburger button on chat area */
+  .chat-messages {
+    padding-top: 60px;
+  }
+
+  /* Welcome screen also needs top padding */
+  .flex-1.flex.flex-col.items-center.justify-center {
+    padding-top: 60px !important;
+  }
+}
+
+/* ============================================
+   LANDSCAPE MOBILE ADJUSTMENTS
+   ============================================ */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sidebar-container {
+    width: 260px;
+  }
+
+  .hamburger-btn {
+    top: 8px;
+    left: 8px;
+    padding: 6px;
+  }
+
+  .chat-messages {
+    padding-top: 50px;
+  }
+}
+
+/* ============================================
+   SAFE AREA INSETS (FOR NOTCHED DEVICES)
+   ============================================ */
+@supports (padding: max(0px)) {
+  @media (max-width: 1024px) {
+    .hamburger-btn {
+      top: max(16px, env(safe-area-inset-top));
+      left: max(16px, env(safe-area-inset-left));
+    }
+
+    .sidebar-container {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+    }
+
+    .message-input-container,
+    .border-t.border-gray-100.bg-white {
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+  }
+}
+
+/* ============================================
+   ANIMATIONS FOR SIDEBAR
+   ============================================ */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

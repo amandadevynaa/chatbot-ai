@@ -21,6 +21,7 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const generateId = () => `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -116,19 +117,42 @@ export default function Home() {
 
   const handleHistoryClick = (messageId: string) => {
     scrollToMessage(messageId);
+    // Close sidebar on mobile after selecting history item
+    setSidebarOpen(false);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(prev => !prev);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
   };
 
   return (
     <div className="flex h-screen bg-white">
+      {/* Hamburger Menu Button - Fixed, hidden when sidebar is open */}
+      <button
+        onClick={toggleSidebar}
+        className={`hamburger-btn ${sidebarOpen ? 'hidden' : ''}`}
+        aria-label="Toggle sidebar"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
       {/* Sidebar */}
       <Sidebar
         onNewChat={handleNewChat}
         history={history}
         onHistoryClick={handleHistoryClick}
+        isOpen={sidebarOpen}
+        onClose={closeSidebar}
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 main-content">
         {/* Chat Area */}
         <ChatArea
           messages={messages}
